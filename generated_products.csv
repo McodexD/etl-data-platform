@@ -1,0 +1,6 @@
+id,name,price,quantity,category
+1,Laptop,1200.0,5,Electronics
+2,Desk,450.0,10,Furniture
+3,Headphones,150.0,25,Electronics
+4,Coffee Mug,15.0,100,Home
+5,Monitor,300.0,12,Electronics
