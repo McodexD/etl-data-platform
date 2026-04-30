@@ -1,6 +1,10 @@
 import pandas as pd
 import csv
 import os
+from fastapi import FastAPI
+
+
+app = FastAPI()
 
 def generate_csv(filename="generated_products.csv"):
     """Creates a local CSV file (Criteria F11)"""
@@ -15,35 +19,28 @@ def generate_csv(filename="generated_products.csv"):
         writer = csv.DictWriter(f, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
-    print(f"--- Step 1: {filename} generated. ---")
 
-def ingest_data(filename):
-    """Reads the CSV (ETL: Ingest)"""
-    return pd.read_csv(filename)
-
-def transform_data(df):
-    """Clean data and calculate stats (ETL: Transform / KOM6)"""
-  
-    df = df.dropna()
+def get_processed_data():
+    """ETL Flow: Ingest and Transform (Criteria KOM6)"""
+    file_name = "generated_products.csv"
+    if not os.path.exists(file_name):
+        generate_csv(file_name)
     
-  
+    df = pd.read_csv(file_name)
     avg_prices = df.groupby('category')['price'].mean().to_dict()
-    
-  
-    top_5 = df.nlargest(5, 'price')
-    
-    print("--- Step 2: Data Transformed (Statistics calculated) ---")
-    return avg_prices, top_5
+    top_5 = df.nlargest(5, 'price').to_dict(orient="records")
+    return {"avg_prices": avg_prices, "top_5_products": top_5}
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Product ETL API"}
+
+@app.get("/statistics")
+def get_stats():
+    """Exposes the transformation results via API"""
+    return get_processed_data()
 
 if __name__ == "__main__":
-    file_name = "generated_products.csv"
-    generate_csv(file_name)
-    product_df = ingest_data(file_name)
-    
-
-    stats, top_products = transform_data(product_df)
-    
-    print("\nAverage Price per Category:")
-    print(stats)
-    print("\nTop 5 Most Expensive Products:")
-    print(top_products)
+    import uvicorn
+    print("Starting the API server...")
+    uvicorn.run(app, host="127.0.0.1", port=8000)
