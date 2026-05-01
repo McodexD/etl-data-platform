@@ -1,7 +1,7 @@
 # Product ETL Data Platform
 
 ## Description
-This project is a Python-based ETL (Extract, Transform, Load) pipeline built for the Data Platform 26 course. It demonstrates how to generate raw product data, process it for statistical insights, and expose the results via a web API.
+This project is a Python-based ETL (Extract, Transform, Load) pipeline built for a Data Platform course. It demonstrates how to generate raw product data, process it for statistical insights, and expose the results via a web API.
 
 ## Features
 * **Ingest**: Generates a CSV file and reads it using Pandas.
